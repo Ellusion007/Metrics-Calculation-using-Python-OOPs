@@ -1,0 +1,422 @@
+import pandas as pd
+import numpy as np
+
+class MetricsCalculation:
+    
+    def __init__(self):
+        self.df = 0
+        self.dft = 0
+        self.Import_Data()
+        self.Lookup_TimePeriod()
+        self.concat()
+    def Import_Data(self):
+        self.df = pd.read_excel(r"E:\OneDrive - Brandscapes Consultancy Pvt. Ltd\Desktop\2023\Tea DB Market Output\Nielsen - Copy.xlsx")
+        print("Data has been Imported")
+        self.dft = pd.read_excel(r"E:\OneDrive - Brandscapes Consultancy Pvt. Ltd\Desktop\2023\Tea DB Market Output\Time Period Masters.xlsx",sheet_name= '1')
+        print("Time Period Masters has been Imported")
+    
+    def Lookup_TimePeriod(self):
+        self.df = self.df.merge(self.dft,how= 'left')
+        print("Time Period has been defined")
+        
+    def concat(self):
+        self.df['concat'] = self.df['Country'].astype(str)+self.df['Segment'].astype(str)+self.df['VCP'].astype(str)+self.df['Manufacturer'].astype(str)+self.df['Brand'].astype(str)+self.df['CY'].astype(str)
+        self.df['concat1'] = self.df['Country'].astype(str)+self.df['Segment'].astype(str)+self.df['VCP'].astype(str)+self.df['Manufacturer'].astype(str)+self.df['Brand'].astype(str)+self.df['PY'].astype(str)
+        self.df['concat2'] = self.df['Country'].astype(str)+self.df['Segment'].astype(str)+self.df['VCP'].astype(str)+self.df['Manufacturer'].astype(str)+self.df['Brand'].astype(str)+self.df['PP'].astype(str)
+        self.df['concat3'] = self.df['Country'].astype(str)+self.df['Segment'].astype(str)+self.df['VCP'].astype(str)+self.df['Manufacturer'].astype(str)+self.df['Brand'].astype(str)+self.df['2YA'].astype(str)
+        print('columns has been concatenated')
+        
+    def Growth_vs_PY(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat1']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat1'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = (value2_column3 / value1_column3-1)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} Growth vs PY'.format(column3)})
+        print(column3,' Growth vs PY has been calculated')
+        
+    def Growth_vs_PP(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat2']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat2'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = (value2_column3 / value1_column3-1)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} Growth vs PP'.format(column3)})
+        print(column3,' Growth vs PP has been calculated')
+    
+    def Growth_vs_2YA(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat3']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat3'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = ((value2_column3 / value1_column3) ** (1 / 2) - 1)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} Growth vs 2YA'.format(column3)})
+        print(column3,' Growth vs 2YA has been calculated')
+        
+    def bps_vs_PY(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat1']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat1'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = (value2_column3 - value1_column3)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} bps chg. vs PY'.format(column3)})
+        print(column3,' bps chg. vs PY has been calculated')
+        
+    def bps_vs_PP(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat2']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat2'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = (value2_column3 - value1_column3)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} bps chg. vs PP'.format(column3)})
+        print(column3,' bps chg. vs PP has been calculated')
+        
+    def bps_vs_2YA(self, column3):
+        # Create an empty list to store the results
+        results = []
+
+        # Iterate over each element in concat
+        for value1 in self.df['concat3']:
+            # Initialize a flag to check if a match is found
+            match_found = False
+
+            # Iterate over each element in concat1
+            for value2 in self.df['concat']:
+                # Check if values match
+                if value1 == value2:
+                    # Find the value in column3 for value1 (concat)
+                    value1_column3 = self.df.loc[self.df['concat'] == value1, column3].values
+                    value1_column3 = value1_column3[0] if len(value1_column3) > 0 else None
+
+                    # Find the value in column3 for value2 (concat1)
+                    value2_column3 = self.df.loc[self.df['concat3'] == value2, column3].values
+                    value2_column3 = value2_column3[0] if len(value2_column3) > 0 else None
+
+                    if value1_column3 is not None and value2_column3 is not None:
+                        # Perform the division
+                        result_value = (value2_column3 - value1_column3)*100
+                        results.append(result_value)
+
+                    # Set the match_found flag to True
+                    match_found = True
+
+            # If no match was found for value1, append None to the results
+            if not match_found:
+                results.append(None)
+                
+        self.df['Result'] = results
+        self.df = self.df.rename(columns = {'Result':'{} bps chg. vs 2YA'.format(column3)})
+        print(column3,' bps chg. vs 2YA has been calculated')
+    
+    def Calculate_Share(self, column3):
+        # Create a new column 'Share' with default value None
+        self.df['Share'] = None
+
+        # Iterate over each row in the DataFrame
+        for index, row in self.df.iterrows():
+            # Create a condition to find the corresponding 'Total' values
+            total_condition = (self.df['Country'] == row['Country']) & \
+                              (self.df['Segment'] == row['Segment']) & \
+                              (self.df['VCP'] == row['VCP']) & \
+                              (self.df['Manufacturer'] == 'Total Category') & \
+                              (self.df['Brand'] == 'Total Category') & \
+                              (self.df['CY'] == row['CY'])
+
+            # Find the corresponding 'Total' values
+            total_value_sales = self.df.loc[total_condition, column3].values
+
+            if len(total_value_sales) > 0:
+                # Create a condition to find the corresponding 'Value Sales'
+                condition = (self.df['Country'] == row['Country']) & \
+                            (self.df['Segment'] == row['Segment']) & \
+                            (self.df['VCP'] == row['VCP']) & \
+                            (self.df['Manufacturer'] == row['Manufacturer']) & \
+                            (self.df['Brand'] == row['Brand']) & \
+                            (self.df['CY'] == row['CY'])
+
+                # Find the corresponding 'Value Sales' and calculate the share
+                corresponding_value_sales = self.df.loc[condition, column3].values
+                if len(corresponding_value_sales) > 0:
+                    share = (corresponding_value_sales[0] / total_value_sales[0]) * 100
+                    self.df.at[index, 'Share'] = share
+        print(self.df['Share'].max())          
+        self.df = self.df.rename(columns = {'Share':'{} Share %'.format(column3)})
+        print(column3,'Share% has been calculated')
+        
+    def SPPD(self, column3, other):
+        
+        self.df['SPPD(€ Mn)'] = np.where(self.df[other] != 0, self.df[column3] / self.df[other], None)
+        self.df['SPPD(€ Mn)'] = self.df['SPPD(€ Mn)'].fillna(0).astype(float)
+
+        print('SPPD(€ Mn) has been calculated')
+        
+        
+    def Price_per_KG(self, column3, other):
+
+        self.df['Price per KG'] = np.where(self.df[other] != 0, self.df[column3] / self.df[other], None)
+        self.df['Price per KG'] = self.df['Price per KG'].fillna(0).astype(float)
+
+        print('Price per KG has been calculated')
+        
+    
+    def API(self, column3):
+        # Create a new column 'Share' with default value None
+        self.df['API'] = None
+
+        # Iterate over each row in the DataFrame
+        for index, row in self.df.iterrows():
+            # Create a condition to find the corresponding 'Total' values
+            total_condition = (self.df['Country'] == row['Country']) & \
+                              (self.df['Segment'] == row['Segment']) & \
+                              (self.df['VCP'] == row['VCP']) & \
+                              (self.df['Manufacturer'] == 'Total Category') & \
+                              (self.df['Brand'] == 'Total Category') & \
+                              (self.df['CY'] == row['CY'])
+
+            # Find the corresponding 'Total' values
+            total_value_sales = self.df.loc[total_condition, column3].values
+
+            if len(total_value_sales) > 0:
+                # Create a condition to find the corresponding 'Value Sales'
+                condition = (self.df['Country'] == row['Country']) & \
+                            (self.df['Segment'] == row['Segment']) & \
+                            (self.df['VCP'] == row['VCP']) & \
+                            (self.df['Manufacturer'] == row['Manufacturer']) & \
+                            (self.df['Brand'] == row['Brand']) & \
+                            (self.df['CY'] == row['CY'])
+
+                # Find the corresponding 'Value Sales' and calculate the share
+                corresponding_value_sales = self.df.loc[condition, column3].values
+                
+                if (len(total_value_sales) > 0 and row[column3] is not None and row[column3] != 0):
+                    API = (row[column3] / total_value_sales[0]) * 100
+                    self.df.at[index, 'API'] = API
+        self.df['API'] = self.df['API'].fillna(0).astype(int)
+        print('API has been calculated')
+        
+    def Competitor_Value_Sales(self, column3):
+        # Create a new column 'Competitor_Value_Sales' with default value None
+        self.df['Competitor_Value_Sales'] = None
+
+        # Iterate over each row in the DataFrame
+        for index, row in self.df.iterrows():
+            # Create a condition to find the corresponding 'Total' values
+            total_condition = (self.df['Country'] == row['Country']) & \
+                              (self.df['Segment'] == row['Segment']) & \
+                              (self.df['VCP'] == row['VCP']) & \
+                              (self.df['Manufacturer'] == 'Total Category') & \
+                              (self.df['Brand'] == 'Total Category') & \
+                              (self.df['CY'] == row['CY'])
+
+            # Find the corresponding 'Total' values
+            total_value_sales = self.df.loc[total_condition, column3].values
+
+            if len(total_value_sales) > 0:
+                # Create a condition to find the corresponding 'Value Sales'
+                condition = (self.df['Country'] == row['Country']) & \
+                            (self.df['Segment'] == row['Segment']) & \
+                            (self.df['VCP'] == row['VCP']) & \
+                            (self.df['Manufacturer'] == 'LT&I') & \
+                            (self.df['Brand'] == 'Total') & \
+                            (self.df['CY'] == row['CY'])
+
+                # Find the corresponding 'Value Sales' and calculate the share
+                corresponding_value_sales = self.df.loc[condition, column3].values
+                if len(corresponding_value_sales) > 0:
+                    Comp_value_sales = (total_value_sales[0] - corresponding_value_sales[0])
+                    self.df.at[index, 'Competitor_Value_Sales'] = Comp_value_sales
+                    
+        print('Competitor_Value_Sales has been calculated')
+            
+    def Competitor_Volume_Sales(self,column3):
+        # Create a new column 'Competitor_Volume_Sales' with default value None
+        self.df['Competitor_Volume_Sales'] = None
+        # Iterate over each row in the DataFrame
+        for index, row in self.df.iterrows():
+            # Create a condition to find the corresponding 'Total' values
+            total_condition = (self.df['Country'] == row['Country']) & \
+                              (self.df['Segment'] == row['Segment']) & \
+                              (self.df['VCP'] == row['VCP']) & \
+                              (self.df['Manufacturer'] == 'Total Category') & \
+                              (self.df['Brand'] == 'Total Category') & \
+                              (self.df['CY'] == row['CY'])
+
+            # Find the corresponding 'Total' values
+            total_volume_sales = self.df.loc[total_condition, column3].values
+
+            if len(total_volume_sales) > 0:
+                # Create a condition to find the corresponding 'Value Sales'
+                condition = (self.df['Country'] == row['Country']) & \
+                            (self.df['Segment'] == row['Segment']) & \
+                            (self.df['VCP'] == row['VCP']) & \
+                            (self.df['Manufacturer'] == 'LT&I') & \
+                            (self.df['Brand'] == 'Total') & \
+                            (self.df['CY'] == row['CY'])
+
+                # Find the corresponding 'Value Sales' and calculate the share
+                corresponding_volume_sales = self.df.loc[condition, column3].values
+                if len(corresponding_volume_sales) > 0:
+                    Comp_volume_sales = (total_volume_sales[0] - corresponding_volume_sales[0])
+                    self.df.at[index, 'Competitor_Volume_Sales'] = Comp_volume_sales
+        print('Competitor_Volume_Sales has been calculated')
+    
+    def Competitor_Price_Per_KG(self, column3, other):
+
+        self.df['Comp Price'] = np.where(self.df[other] != 0, self.df[column3] / self.df[other], None)
+#         self.df['Comp Price'] = self.df['Comp Price'].fillna(0).astype(int)
+
+        print('Comp Price has been calculated')
+        
+    def RPI(self, column3, other):
+        
+        self.df['RPI'] = np.where(self.df[other] != 0, (self.df[column3] / self.df[other])*100, None)
+#         self.df['RPI'] = self.df['RPI'].fillna(0).astype(int)
+
+        print('RPI has been calculated')
+        
+    def Percent_Vol_On_Promo(self, column3, other):
+        
+        self.df['% Vol On Promo'] = np.where(self.df[other] != 0, (self.df[column3] / self.df[other])*100, None)
+#         self.df['% Vol On Promo'] = self.df['% Vol On Promo'].fillna(0).astype(int)
+
+        print('% Vol On Promo has been calculated')
